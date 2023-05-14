@@ -1,160 +1,323 @@
-#include<stdio.h>
-#include<stdlib.h>
-double g(int i, int j);
-void f1(int a);          //国产战斗机所有性能参数总览
-void f2(int a);          //国产战斗机参数查询
-void f3(int a);          //单一战斗机性能查询
-void f4(int a);          //单一性能排序
+/*#include<bits/stdc++.h>*/
+#include <iostream>
+#include <cstdio>
+#include <cerrno>
+#include <ctime>
+#include <cstdlib>
+#include <fstream>
+#include <string>
+using namespace std;
+
+#pragma warning(disable : 4996)
+#define FILE_PATH "D:/Demo.txt"  // 文件路径
+char Arithmetic_brackets[4] = { '(' , ' ' , ')' , ' ' }; //括号
+char Arithmetic_operators[4] = { '+' , '-' , '*' , '/' }; //运算符
+const int Arithmetic_operation = 4; //生成随机运算符
+const int Arithmetic_bracket = 2; //生成随机括号
+int Arithmetic_number; //题目数目
+int Arithmetic_max;	//最大数
+int Arithmetic_iffile;   //确定是否打印
+int Arithmetic_ifdecimal;  //确定是否有小数
+int Arithmetic_ifbrackets;  //确定是否有括号
+char* dt;   //当地时间
+FILE* fp;   //文件地址
+void showMenu();    //欢迎界面
+void showExit();	//退出界面
+void Arithmetic_Output_Screen();//屏幕输出函数
+void Arithmetic_Output_File();  //文本输出函数
+void getTime(); //获取日期和时间
+void showMenu()
+{
+	system("title 小学四则运算自动生成程序@Ryanjie@嚯唶");
+	system("mode con cols=150");//改变控制台宽度
+	system("color 0f");//改变背景颜色
+	system("echo.");
+
+	//getTime();
+
+	system("echo.");
+	cout << "※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                欢迎您使用小学四则运算自动生成程序                                  ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                             version： 1.0                                          ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                请您按照步骤来生成四则运算练习题：                                  ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※                第1步：请设置题目数量 <1-100>                                       ※" << endl;
+	cout << "※                第2步：请设置最大数 <1-1000>                                        ※" << endl;
+	cout << "※                第3步：请选择是否有小数                                             ※" << endl;
+	cout << "※                第4步：请选择是否有括号                                             ※" << endl;
+	cout << "※                第5步：请选择是否打印到文件                                         ※" << endl;
+	cout << "※                                                                                    ※" << endl;
+	cout << "※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※" << endl;
+	system(" echo.");
+}
+
+void menu1()
+{
+	system(" echo.");
+	showMenu();
+	cout << "第1步：请设置题目数量 <1-100> ：" << endl;
+	cin >> Arithmetic_number;
+	while ((Arithmetic_number > 100) || (Arithmetic_number < 1))
+	{
+		cout << "您设置的题目数目不符合要求(太多/太少)。 < 1 - 100 > " << endl;
+		cout << endl;
+		cout << "请按确认键重新输入，谢谢！" << endl;
+		system("Pause >nul");
+		cin >> Arithmetic_number;
+	}
+}
+
+void menu2()
+{
+	system("echo.");
+	cout << "第2步：请设置最大数 <1-1000> ：" << endl;
+	cin >> Arithmetic_max;
+	while ((Arithmetic_max > 1000) || (Arithmetic_max < 1))
+	{
+		cout << "您设置的最大数不符合要求(太大/太小)。 < 1 - 1000 > " << endl;
+		cout << endl;
+		cout << "请按确认键重新输入，谢谢！" << endl;
+		system("Pause >nul");
+		cin >> Arithmetic_max;
+	}
+}
+
+void menu3()
+{
+	system("echo.");
+	cout << "第3步：请选择是否有小数：(输入 <0> 生成整数 , 输入 <1> 生成小数) " << endl;
+	cin >> Arithmetic_ifdecimal;
+	while ((Arithmetic_ifdecimal != 0) && (Arithmetic_ifdecimal != 1))
+	{
+		cout << "您输入的数不符合要求。(输入 <0> 生成整数 , 输入 <1> 生成小数) " << endl;
+		cout << endl;
+		cout << "请按确认键重新输入！" << endl;
+		system("Pause >nul");
+		cin >> Arithmetic_ifdecimal;
+	}
+}
+
+void menu4()
+{
+	system("echo.");
+	cout << "第4步：请选择是否有括号：(输入 <0> 无括号 , 输入 <1> 有括号)" << endl;
+	cin >> Arithmetic_ifbrackets;
+	while ((Arithmetic_ifbrackets != 0) && (Arithmetic_ifbrackets != 1))
+	{
+		cout << "您输入的数不符合要求。(输入 <0> 无括号 , 输入 <1> 有括号) " << endl;
+		cout << endl;
+		cout << "请按确认键重新输入！" << endl;
+		system("Pause >nul");
+		cin >> Arithmetic_ifbrackets;
+	}
+}
+
+void menu5()
+{
+	system("echo.");
+	cout << "第5步：请选择是否打印到文件：(输入 <0> 不打印(屏幕显示) , 输入 <1> 打印)" << endl;
+	cin >> Arithmetic_iffile;
+	while ((Arithmetic_iffile != 0) && (Arithmetic_iffile != 1))
+	{
+		cout << "您输入的数不符合要求。(输入 <0> 不打印(屏幕显示) , 输入 <1> 打印) " << endl;
+		cout << endl;
+		cout << "请按确认键重新输入！" << endl;
+		system("Pause >nul");
+		cin >> Arithmetic_iffile;
+	}
+}
+
+
+void menu()
+{
+	menu1();
+	menu2();
+	menu3();
+	menu4();
+	menu5();
+}
+
+void Arithmetic_Output_Screen()
+{
+	cout << "+----------------以下为*小学四则运算自动生成程序*所生成的四则运算练习题----------------+" << endl;
+
+	for (int i = 0; i < Arithmetic_number; ++i)
+	{
+		/*随机生成四个整数*/
+		int number1 = rand() % Arithmetic_max;
+		int number2 = rand() % Arithmetic_max;
+		int number3 = rand() % Arithmetic_max;
+		int number4 = rand() % Arithmetic_max;
+
+		/*随机生成四个小数*/
+		float number5 = (float)rand() / Arithmetic_max;
+		float number6 = (float)rand() / Arithmetic_max;
+		float number7 = (float)rand() / Arithmetic_max;
+		float number8 = (float)rand() / Arithmetic_max;
+
+		/*随机生成三个运算符*/
+		int operation1 = rand() % Arithmetic_operation;
+		int operation2 = rand() % Arithmetic_operation;
+		int operation3 = rand() % Arithmetic_operation;
+		char cur_operation1 = Arithmetic_operators[operation1];
+		char cur_operation2 = Arithmetic_operators[operation2];
+		char cur_operation3 = Arithmetic_operators[operation3];
+
+		/*随机产生括号()*/
+		int barcket1 = rand() % Arithmetic_bracket;
+		char cur_barckets1 = Arithmetic_brackets[barcket1];
+		char cur_barckets2 = Arithmetic_brackets[barcket1 + 2];
+
+		if (Arithmetic_ifdecimal)
+		{
+			if (Arithmetic_ifbrackets)
+			{
+				cout << "NO." << i << " : " << cur_barckets1 << number5 << " " << cur_operation1 << " " << number6 << cur_barckets2 << " " << cur_operation2 << " " << number7 << " " << cur_operation3 << " " << number8 << "=" << endl;
+			}
+			else
+			{
+				cout << "NO." << i << " : " << number5 << " " << cur_operation1 << " " << number6 << " " << cur_operation2 << " " << number7 << " " << cur_operation3 << " " << number8 << "=" << endl;
+			}
+		}
+		else
+		{
+			if (Arithmetic_ifbrackets)
+			{
+				cout << "NO." << i << " : " << cur_barckets1 << number1 << " " << cur_operation1 << " " << number2 << cur_barckets2 << " " << cur_operation2 << " " << number3 << " " << cur_operation3 << " " << number4 << "=" << endl;
+			}
+			else
+			{
+				cout << "NO." << i << " : " << number1 << " " << cur_operation1 << " " << number2 << " " << cur_operation2 << " " << number3 << " " << cur_operation3 << " " << number4 << "=" << endl;
+			}
+		}
+	}
+
+	cout << "+--------------------------------------------------------------------------------------+" << endl;
+
+}
+
+void Arithmetic_Output_File()
+{
+	cout << Arithmetic_number << endl;
+	fp = fopen(FILE_PATH, "at+");
+	if (fp != NULL)
+	{
+		fprintf(fp, "\n");
+		fprintf(fp, "+----------------以下为*小学四则运算自动生成程序*所生成的四则运算练习题----------------+\n");
+		time_t now = time(0);
+		char* dt = ctime(&now);
+		tm* gmtm = gmtime(&now);
+		dt = asctime(gmtm);
+		fprintf(fp, "                                                UTC 日期和时间：%s \n", dt);
+
+		for (int i = 0; i < Arithmetic_number; ++i)
+		{
+			/*随机生成四个整数*/
+			int number1 = rand() % Arithmetic_max;
+			int number2 = rand() % Arithmetic_max;
+			int number3 = rand() % Arithmetic_max;
+			int number4 = rand() % Arithmetic_max;
+
+			/*随机生成四个小数*/
+			float number5 = (float)rand() / Arithmetic_max;
+			float number6 = (float)rand() / Arithmetic_max;
+			float number7 = (float)rand() / Arithmetic_max;
+			float number8 = (float)rand() / Arithmetic_max;
+
+			/*随机生成三个运算符*/
+			int operation1 = rand() % Arithmetic_operation;
+			int operation2 = rand() % Arithmetic_operation;
+			int operation3 = rand() % Arithmetic_operation;
+			char cur_operation1 = Arithmetic_operators[operation1];
+			char cur_operation2 = Arithmetic_operators[operation2];
+			char cur_operation3 = Arithmetic_operators[operation3];
+
+			/*随机产生括号()*/
+			int barcket1 = rand() % Arithmetic_bracket;
+			char cur_barckets1 = Arithmetic_brackets[barcket1];
+			char cur_barckets2 = Arithmetic_brackets[barcket1 + 2];
+			if (Arithmetic_ifdecimal)  //判断是否有小数
+			{
+				if (Arithmetic_ifbrackets)	//判断是否有括号
+				{
+					fprintf(fp, "NO. %2d : %c %.2f %c %.2f %c %c %.2f %c %.2f = \n", i, cur_barckets1, number5, cur_operation1, number6, cur_barckets2, cur_operation2, number7, cur_operation3, number8);
+					//fprint( << "NO." << i << " : "<< cur_barckets1 << number5 << " " << cur_operation1 << " " << number6 << cur_barckets2 << " " << cur_operation2 << " " << number7 << " " << cur_operation3 << " " << number8 << "=" << endl;
+				}
+				else
+				{
+					fprintf(fp, "NO. %2d : %.2f %c %.2f %c %.2f %c %.2f = \n", i, number5, cur_operation1, number6, cur_operation2, number7, cur_operation3, number8);
+					//fprint( << "NO." << i << " : "<< number5 << " " << cur_operation1 << " " << number6 << " " << cur_operation2 << " " << number7 << " " << cur_operation3 << " " << number8 << "=" << endl;
+				}
+			}
+			else
+			{
+				if (Arithmetic_ifbrackets)
+				{
+					fprintf(fp, "NO. %2d : %c %d %c %d %c %c %d %c %d = \n", i, cur_barckets1, number1, cur_operation1, number2, cur_barckets2, cur_operation2, number3, cur_operation3, number4);
+					//fprint( << "NO." << i << " : "<< cur_barckets1 << number1 << " " << cur_operation1 << " " << number2 << cur_barckets2 << " " << cur_operation2 << " " << number3 << " " << cur_operation3 << " " << number4 << "=" << endl;
+				}
+				else
+				{
+					fprintf(fp, "NO. %2d : %d %c %d %c %d %c %d = \n", i, number1, cur_operation1, number2, cur_operation2, number3, cur_operation3, number4);
+					//fprint( << "NO." << i << " : "<< number1 << " " << cur_operation1 << " " << number2 << " " << cur_operation2 << " " << number3 << " " << cur_operation3 << " " << number4 << "=" << endl;
+				}
+			}
+		}
+	}
+	else
+	{
+		perror(FILE_PATH);
+		exit(-1);
+	}
+	fprintf(fp, "+--------------------------------------------------------------------------------------+\n");
+
+	fprintf(fp, "\n");
+}
+
+void getTime()
+{
+	system("cls");
+	system("echo.");
+	time_t now = time(0);
+	char* dt = ctime(&now);
+	tm* gmtm = gmtime(&now);
+	dt = asctime(gmtm);
+	cout << "UTC 日期和时间：" << dt << endl;
+	cout << "本地日期和时间：" << dt << endl;
+	system("echo.");
+}
+
+void showExit()
+{
+	//getTime();
+	cout << "☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★" << endl;
+	cout << "★                                                                                    ☆" << endl;
+	cout << "☆       恭喜您，四则运算练习题已经成功生成！                                         ★" << endl;
+	cout << "★                                                                                    ☆" << endl;
+	cout << "☆       谢谢您的使用，欢迎您下次再来！                                               ★" << endl;
+	cout << "★                                                                                    ☆" << endl;
+	cout << "☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★" << endl;
+	cout << "请按确认键退出！" << endl;
+	//system("Pause >nul");
+}
+
 int main()
 {
-	int a;
-	printf("      国产战机性能参数\n");
-	printf("国产战斗机所有性能参数总览......1\n国产战斗机参数查询..............2\n单一战斗机性能查询..............3\n单一性能排序....................4\n结束查询........................5\n");
-	for (;;)
-	{
-		scanf("%d", &a);
-		switch (a)
-		{
-		case 1: {f1(a); break; }
-		case 2: {f2(a); break; }
-		case 3: {f3(a); break; }
-		case 4: {f4(a); break; }
-		case 5:return 0;
-		}
-		system("pause");
-		system("cls");
-		printf("国产战斗机所有性能参数总览......1\n国产战斗机参数查询..............2\n单一战斗机性能查询..............3\n单一性能排序....................4\n结束查询........................5\n");
-	}
-	return 0;
-}
-double g(int i, int j) {
-	double d[5][8] = { {22.28,5.92,15,2.94,20,3500,1000,0.8},{17.48,5.55,10.40,2.99,1.89,2340,1345,0.09},{34.8,9.85,32.989,992,1.28,5760,2500,0.3},{16.43,5.43,9.73,2340,18,3200,1250,6.6},{21.9,5.93,14.7,2876,18.5,3790,1500,8} };
-	return d[i][j];
-}
-void f1(int a) {
-	int i, j, m;
-	printf("\n飞机型号    机身长        机身高          翼展  最大飞行速度  最大飞行高度          航程      作战半径        载弹量\n                 m             m             m          km/h            km            km            km             t\n");
-	for (i = 0, m = 10; i < 5; i++, m++)
-	{
-		if (m < 13) printf("歼%d", m);
-		else if (m == 13) printf("轰 6");
-		else printf("歼15");
-		for (j = 0; j < 8; j++)
-		{
-			printf("%14.2f", g(i, j));
-			if (j == 7) printf("\n");
-		}
-	}
-	printf("\n");
-}
-void f2(int a)
-{
-	int m, i, j;
-	printf("歼10............................1\n歼11............................2\n歼12............................3\n轰 6............................4\n歼15............................5\n");
-	scanf("%d", &m);
-	printf("飞机型号    机身长        机身高          翼展  最大飞行速度  最大飞行高度          航程      作战半径        载弹量\n                 m             m             m          km/h            km            km            km             t\n");
-	switch (m)
-	{
-	case 1: {i = 0, j = 0;
-		printf("歼10");
-		for (j = 0; j < 8; j++)
-			printf("%14.2f", g(i, j)); break; }
-	case 2: {i = 1, j = 0;
-		printf("歼11");
-		for (j = 0; j < 8; j++)
-			printf("%14.2f", g(i, j)); break; }
-	case 3: {i = 2, j = 0;
-		printf("歼12");
-		for (j = 0; j < 8; j++)
-			printf("%14.2f", g(i, j)); break; }
-	case 4: {i = 3, j = 0;
-		printf("轰 6");
-		for (j = 2; j < 8; j++)
-			printf("%14.2f", g(i, j)); break; }
-	case 5: {i = 4, j = 0;
-		printf("歼15");
-		for (j = 0; j < 8; j++)
-			printf("%14.2f", g(i, j)); break; }
-	}
-	printf("\n\n");
-}
-void f3(int a)
-{
-	int m, i, j;
-	printf("机身长..........................1\n机身高..........................2\n翼展............................3\n最大飞行速度....................4\n最大飞行高度....................5\n航程............................6\n作战半径........................7\n载弹量..........................8\n");
-	scanf("%d", &m);
-	switch (m)
-	{
-	case 1: {printf("                   歼10          歼11          歼12           轰6          歼15\n");
-		printf("机身长(m)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 2: {printf("                   歼10          歼11          歼12           轰6          歼15\n");
-		printf("机身高(m)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 3: {printf("                 歼10          歼11          歼12           轰6          歼15\n");
-		printf("翼展(m)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 4: {printf("                            歼10          歼11          歼12           轰6          歼15\n");
-		printf("最大飞行速度(km/h)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 5: {printf("                          歼10          歼11          歼12           轰6          歼15\n");
-		printf("最大飞行高度(km)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 6: {printf("                  歼10          歼11          歼12           轰6          歼15\n");
-		printf("航程(km)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 7: {printf("                      歼10          歼11          歼12           轰6          歼15\n");
-		printf("作战半径(km)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	case 8: {printf("                   歼10          歼11          歼12           轰6          歼15\n");
-		printf("载弹量(t)");
-		for (i = 0, j = 0; i < 5; i++)
-			printf("%14.2f", g(i, j)); break; }
-	}
-	printf("\n\n");
-}
-void f4(int a)
-{
-	int m, i, j, c;
-	double b = 0.0, w[5];
-	printf("机身长..........................1\n机身高..........................2\n翼展............................3\n最大飞行速度....................4\n最大飞行高度....................5\n航程............................6\n作战半径........................7\n载弹量..........................8\n");
-	scanf("%d", &m);
-	switch (m)
-	{
-	case 1:printf("飞机型号              机身长(m)\n"); break;
-	case 2:printf("飞机型号              机身高(m)\n"); break;
-	case 3:printf("飞机型号                翼展(m)\n"); break;
-	case 4:printf("飞机型号     最大飞行速度(km/h)\n"); break;
-	case 5:printf("飞机型号       最大飞行高度(km)\n"); break;
-	case 6:printf("飞机型号               航程(km)\n"); break;
-	case 7:printf("飞机型号           作战半径(km)\n"); break;
-	case 8:printf("飞机型号              载弹量(t)\n"); break;
-	}
-	for (i = 0; i < 5; i++)
-		w[i] = g(i, m - 1);
-	for (i = 3; i >= 0; i--)
-		for (j = 0; j <= i; j++)
-			if (w[j] < w[j + 1])
-			{
-				b = w[j];
-				w[j] = w[j + 1];
-				w[j + 1] = b;
-			}
-	for (i = 0, c = 10; i < 5; i++, c++)
-		for (j = 0; j < 5; j++)
-			if (w[i] == g(j, m - 1))
-			{
-				if (c < 13) printf("歼%d            ", c);
-				else if (c == 13) printf("轰 6            ");
-				else printf("歼15            ");
-				printf("%14.2f\n", w[i]);
-			}
-	printf("\n\n");
+	showMenu();
+	menu();
+	Arithmetic_Output_Screen();
+	Arithmetic_Output_File();
+	//getTime();
+	showExit();
 }
